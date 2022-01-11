@@ -1,6 +1,6 @@
 # Vector Quantized Diffusion Model for Text-to-Image Synthesis
 
-Due to company policy, I have to set microsoft/VQ-Diffusion to private for now, so I provide the same code here.
+<font color="#660000">Due to company policy, I have to set microsoft/VQ-Diffusion to private for now, so I provide the same code here.</font><br />
 
 ## Overview
 
