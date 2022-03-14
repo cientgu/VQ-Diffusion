@@ -141,6 +141,7 @@ class DiffusionTransformer(nn.Module):
 
         self.register_buffer('Lt_history', torch.zeros(self.num_timesteps))
         self.register_buffer('Lt_count', torch.zeros(self.num_timesteps))
+        self.zero_vector = None
 
 
     def multinomial_kl(self, log_prob1, log_prob2):   # compute KL loss on log_prob
@@ -153,9 +154,13 @@ class DiffusionTransformer(nn.Module):
         log_ct = extract(self.log_ct, t, log_x_t.shape)             # ct
         log_1_min_ct = extract(self.log_1_min_ct, t, log_x_t.shape)          # 1-ct
 
-        log_probs = torch.zeros(log_x_t.size()).type_as(log_x_t)
-        log_probs[:,:-1,:] = log_add_exp(log_x_t[:,:-1,:]+log_at, log_bt)
-        log_probs[:,-1:,:] = log_add_exp(log_x_t[:,-1:,:]+log_1_min_ct, log_ct)
+        log_probs = torch.cat(
+            [
+                log_add_exp(log_x_t[:,:-1,:]+log_at, log_bt),
+                log_add_exp(log_x_t[:, -1:, :] + log_1_min_ct, log_ct)
+            ],
+            dim=1
+        )
 
         return log_probs
 
@@ -168,9 +173,13 @@ class DiffusionTransformer(nn.Module):
         log_1_min_cumprod_ct = extract(self.log_1_min_cumprod_ct, t, log_x_start.shape)       # 1-ct~
         
 
-        log_probs = torch.zeros(log_x_start.size()).type_as(log_x_start)
-        log_probs[:,:-1,:] = log_add_exp(log_x_start[:,:-1,:]+log_cumprod_at, log_cumprod_bt)
-        log_probs[:,-1:,:] = log_add_exp(log_x_start[:,-1:,:]+log_1_min_cumprod_ct, log_cumprod_ct)
+        log_probs = torch.cat(
+            [
+                log_add_exp(log_x_start[:,:-1,:]+log_cumprod_at, log_cumprod_bt),
+                log_add_exp(log_x_start[:,-1:,:]+log_1_min_cumprod_ct, log_cumprod_ct)
+            ],
+            dim=1
+        )
 
         return log_probs
 
@@ -187,8 +196,9 @@ class DiffusionTransformer(nn.Module):
         assert out.size()[2:] == x_t.size()[1:]
         log_pred = F.log_softmax(out.double(), dim=1).float()
         batch_size = log_x_t.size()[0]
-        zero_vector = torch.zeros(batch_size, 1, self.content_seq_len).type_as(log_x_t)- 70
-        log_pred = torch.cat((log_pred, zero_vector), dim=1)
+        if self.zero_vector is None or self.zero_vector.shape[0] != batch_size:
+            self.zero_vector = torch.zeros(batch_size, 1, self.content_seq_len).type_as(log_x_t)- 70
+        log_pred = torch.cat((log_pred, self.zero_vector), dim=1)
         log_pred = torch.clamp(log_pred, -70, 0)
 
         return log_pred
