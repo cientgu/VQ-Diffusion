@@ -1,4 +1,4 @@
-# Vector Quantized Diffusion Model for Text-to-Image Synthesis
+# Vector Quantized Diffusion Model for Text-to-Image Synthesis (CVPR 2022)
 
 Due to company policy, I have to set microsoft/VQ-Diffusion to private for now, so I provide the same code here.
 
