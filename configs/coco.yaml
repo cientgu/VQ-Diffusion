@@ -1,4 +1,4 @@
-# change from o4
+# Finetune VQ-Diffusion-F on coco dataset
 model:
   target: image_synthesis.modeling.models.dalle.DALLE
   params:
