@@ -1,4 +1,4 @@
-# change from o4
+# pretrain on CC data
 model:
   target: image_synthesis.modeling.models.dalle.DALLE
   params:
