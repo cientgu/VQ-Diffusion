@@ -2,6 +2,8 @@
 
 Due to company policy, I have to set microsoft/VQ-Diffusion to private for now, so I provide the same code here.
 
+The code of [Improved VQ-Diffusion]() is in the new branch, it could improve the performance of VQ-Diffusion by large margin.
+
 ## Overview
 
 This is the official repo for the paper: [Vector Quantized Diffusion Model for Text-to-Image Synthesis](https://arxiv.org/pdf/2111.14822.pdf).
