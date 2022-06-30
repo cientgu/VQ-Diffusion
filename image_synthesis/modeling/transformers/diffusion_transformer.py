@@ -227,6 +227,9 @@ class DiffusionTransformer(nn.Module):
         log_pred = torch.clamp(log_pred, -70, 0)
 
         return log_pred
+    
+    def cf_predict_start(self, log_x_t, cond_emb, t):
+        return self.predict_start(log_x_t, cond_emb, t)
 
     def q_posterior(self, log_x_start, log_x_t, t):            # p_theta(xt_1|xt) = sum(q(xt-1|xt,x0')*p(x0'))
         # notice that log_x_t is onehot
